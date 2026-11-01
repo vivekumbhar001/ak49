@@ -1,0 +1,212 @@
+PRACTICAL 10: CI/CD PIPELINE USING JENKINS, DOCKER AND KUBERNETES
+
+1. AIM
+To automate the build and deployment of an AI model using Jenkins, Docker, and Kubernetes.
+
+2. REQUIREMENTS
+- Git and GitHub account
+- Docker Desktop
+- Minikube and kubectl
+- Jenkins
+- Java 21 or later
+- Docker Hub account
+
+Jenkins installation:
+https://www.jenkins.io/doc/book/installing/windows/
+
+3. PREPARE THE PROJECT
+
+Create a GitHub repository containing:
+
+ai-project/
+  app.py
+  requirements.txt
+  Dockerfile
+  Jenkinsfile
+
+Use the AI model code and Dockerfile from the previous practical. Make sure Flask runs on host 0.0.0.0 and port 5000.
+
+4. START REQUIRED SERVICES
+
+Start Docker Desktop.
+
+Start Minikube:
+
+minikube start --driver=docker
+
+Check Kubernetes:
+
+kubectl get nodes
+
+Check Docker:
+
+docker --version
+
+Jenkins must be able to run both docker and kubectl commands and access the Minikube cluster.
+
+5. INSTALL JENKINS
+
+1. Install Java 21 or later.
+2. Download Jenkins for Windows from the official link above.
+3. Run the installer.
+4. Open Jenkins at:
+
+   http://localhost:8080
+
+5. Complete the unlock and setup steps.
+6. Install the suggested plugins, including Pipeline and Git.
+
+IMPORTANT:
+For this practical, run Jenkins under a Windows account that can access Docker Desktop and the Minikube kubeconfig. If Jenkins cannot run Docker or kubectl, check its Windows service account, PATH, and kubeconfig permissions.
+
+6. CREATE DOCKER HUB CREDENTIALS
+
+1. Create a Docker Hub repository named ai-model.
+2. In Jenkins, open:
+   Manage Jenkins -> Credentials -> System -> Global credentials.
+3. Add a Username with password credential:
+   Username: your Docker Hub username
+   Password: Docker Hub access token
+   ID: dockerhub-creds
+
+Use a Docker Hub access token, not your normal account password.
+
+7. CREATE THE JENKINSFILE
+
+Create a file named Jenkinsfile in the project root.
+
+Replace YOUR_DOCKERHUB_USERNAME with your actual Docker Hub username.
+
+pipeline {
+    agent any
+
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+
+    environment {
+        IMAGE_NAME = 'YOUR_DOCKERHUB_USERNAME/ai-model'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker build -t %IMAGE_NAME%:%BUILD_NUMBER% .'
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DH_USER',
+                    passwordVariable: 'DH_TOKEN'
+                )]) {
+                    bat '''
+                    @echo off
+                    echo %DH_TOKEN%| docker login -u %DH_USER% --password-stdin
+                    docker push %IMAGE_NAME%:%BUILD_NUMBER%
+                    docker logout
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                bat '''
+                kubectl create deployment ai-model --image=%IMAGE_NAME%:%BUILD_NUMBER% --port=5000 --dry-run=client -o yaml | kubectl apply -f -
+                kubectl expose deployment ai-model --name=ai-model-service --type=NodePort --port=5000 --target-port=5000 --dry-run=client -o yaml | kubectl apply -f -
+                kubectl rollout status deployment/ai-model --timeout=180s
+                '''
+            }
+        }
+    }
+}
+
+8. CREATE A JENKINS PIPELINE JOB
+
+1. Open http://localhost:8080.
+2. Click New Item.
+3. Enter AI-Model-CI-CD.
+4. Select Pipeline and click OK.
+5. Under Pipeline, choose Pipeline script from SCM.
+6. Select Git.
+7. Enter your GitHub repository URL.
+8. Set the branch to */main.
+9. Set Script Path to Jenkinsfile.
+10. Save.
+
+The pollSCM setting checks for source changes at regular intervals. A commit pushed to the configured branch can trigger the pipeline.
+
+9. RUN AND TEST THE PIPELINE
+
+1. Open the Jenkins job AI-Model-CI-CD.
+2. Click Build Now.
+3. Open Console Output.
+4. Check the stages: Checkout, Build Docker Image, Push Image, Deploy to Kubernetes.
+
+Verify Kubernetes deployment:
+
+kubectl get deployments
+kubectl get pods
+kubectl get services
+
+Check deployment rollout:
+
+kubectl rollout status deployment/ai-model
+
+Access the application:
+
+minikube service ai-model-service --url
+
+Open the URL printed by Minikube in your browser.
+
+10. RESULT
+Successfully created a Jenkins CI/CD pipeline that retrieves code from GitHub, builds a Docker image, pushes it to Docker Hub, and deploys the AI application to Kubernetes.
+
+11. VIVA QUESTIONS
+
+Q1. What is CI?
+Ans. Continuous Integration means regularly combining code changes and automatically building or testing them.
+
+Q2. What is CD?
+Ans. Continuous Delivery or Deployment automates preparing or releasing an application.
+
+Q3. What is Jenkins?
+Ans. Jenkins is an automation server used to build and deploy applications.
+
+Q4. What is a Jenkinsfile?
+Ans. A file that defines the stages of a Jenkins Pipeline.
+
+Q5. Why is Docker used?
+Ans. Docker packages the application and dependencies into an image.
+
+Q6. Why is Kubernetes used?
+Ans. Kubernetes deploys and manages containerized applications.
+
+Q7. What is Docker Hub?
+Ans. A registry used to store and share Docker images.
+
+Q8. What does Build Now do?
+Ans. It starts the Jenkins pipeline manually.
+
+Q9. What is a pipeline?
+Ans. A sequence of automated steps such as checkout, build, push, and deploy.
+
+Q10. What is pollSCM?
+Ans. It checks the source repository at scheduled intervals for new changes.
+
+IMPORTANT NOTES
+- For this simple practical, make the Docker Hub image repository public so Minikube can pull it without an image-pull secret.
+- Replace YOUR_DOCKERHUB_USERNAME in Jenkinsfile.
+- Jenkins must have permission to use Docker Desktop and the Minikube Kubernetes context.
+- The Flask app must listen on port 5000 for these deployment commands to work.
+
+END OF PRACTICAL
