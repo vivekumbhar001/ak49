@@ -1,0 +1,184 @@
+AI24305: VSEC - DEVOPS AND GIT
+PRACTICAL 9: AUTO-SCALING AND MONITORING AI APP USING KUBERNETES
+
+1. AIM
+To automatically scale an AI application on Kubernetes and monitor its health and performance.
+
+2. REQUIREMENTS
+- Docker Desktop
+- Minikube
+- kubectl
+- Previous Minikube AI app (Deployment: ai-model; Service: ai-model-service)
+
+3. START MINIKUBE AND METRICS SERVER
+
+Start Docker Desktop, then run:
+
+minikube start --driver=docker
+minikube addons enable metrics-server
+
+Check the cluster:
+
+kubectl get nodes
+kubectl top nodes
+
+4. ADD A TEST-LOAD ROUTE TO app.py
+
+Add this route to the previous Flask app:
+
+@app.route("/load")
+def load():
+    total = 0
+    for i in range(1000000):
+        total += i * i
+    return jsonify({"status": "test completed"})
+
+This route creates CPU work only to demonstrate autoscaling. It is not needed in a real application.
+
+Rebuild and load the new image:
+
+docker build -t ai-model:v2 .
+minikube image load ai-model:v2
+
+5. UPDATE THE KUBERNETES DEPLOYMENT
+
+In deployment.yaml, use the following Deployment. Keep your existing Service named ai-model-service.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-model
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-model
+  template:
+    metadata:
+      labels:
+        app: ai-model
+    spec:
+      containers:
+      - name: ai-model
+        image: ai-model:v2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          periodSeconds: 10
+
+Apply the updated deployment:
+
+kubectl apply -f deployment.yaml
+
+6. CREATE THE AUTO-SCALER
+
+Create a file named hpa.yaml:
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: ai-model-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ai-model
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+
+Apply it:
+
+kubectl apply -f hpa.yaml
+
+7. GENERATE TEST LOAD
+
+Run this command to repeatedly call the AI app:
+
+kubectl run load-generator --image=busybox:1.36 --restart=Never -- /bin/sh -c "while true; do wget -q -O- http://ai-model-service:5000/load > /dev/null; done"
+
+Wait about one or two minutes, then check:
+
+kubectl get hpa
+kubectl get pods -l app=ai-model
+
+The number of AI model pods may increase when CPU usage goes above the target. Scaling depends on the available resources and amount of load.
+
+Stop the test:
+
+kubectl delete pod load-generator
+
+8. MONITOR HEALTH AND PERFORMANCE
+
+Check pods:
+
+kubectl get pods
+
+Check CPU and memory:
+
+kubectl top pods
+kubectl top nodes
+
+Check autoscaler details:
+
+kubectl describe hpa ai-model-hpa
+
+Check application logs:
+
+kubectl logs deployment/ai-model
+
+Readiness probe checks whether the app can receive traffic.
+Liveness probe checks whether the app is still healthy.
+
+9. RESULT
+Successfully configured Kubernetes autoscaling for the AI model and monitored pod health, CPU, memory, and scaling activity.
+
+10. VIVA QUESTIONS
+
+Q1. What is auto-scaling?
+Ans. Automatically increasing or decreasing the number of application pods based on demand.
+
+Q2. What is HPA?
+Ans. Horizontal Pod Autoscaler automatically changes the number of pod replicas.
+
+Q3. What is Metrics Server?
+Ans. It provides CPU and memory metrics to Kubernetes.
+
+Q4. Which command shows pod CPU and memory?
+Ans. kubectl top pods
+
+Q5. What is a readiness probe?
+Ans. It checks whether a pod is ready to receive traffic.
+
+Q6. What is a liveness probe?
+Ans. It checks whether a container is healthy.
+
+Q7. What do minReplicas and maxReplicas specify?
+Ans. The minimum and maximum number of pods.
+
+Q8. Which command displays HPA status?
+Ans. kubectl get hpa
+
+END OF PRACTICAL
