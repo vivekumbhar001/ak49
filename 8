@@ -1,0 +1,248 @@
+PRACTICAL: DEPLOY AND SCALE AI APP USING MINIKUBE
+
+1. AIM
+To create a local Kubernetes cluster using Minikube, deploy a Dockerized AI model, and scale its pods.
+
+2. REQUIRED SOFTWARE
+- Docker Desktop: https://www.docker.com/products/docker-desktop/
+- Minikube: https://minikube.sigs.k8s.io/docs/start/
+- kubectl: https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/
+- VS Code
+
+Start Docker Desktop before running the commands.
+
+3. INSTALL AND START MINIKUBE
+
+Install Minikube (PowerShell):
+
+winget install Kubernetes.minikube
+
+Install kubectl:
+
+winget install -e --id Kubernetes.kubectl
+
+Start the cluster:
+
+minikube start --driver=docker
+
+Check the cluster:
+
+minikube status
+kubectl get nodes
+
+The node should show Ready.
+
+4. CREATE THE AI MODEL
+
+Create a folder named minikube-ai and open it in VS Code.
+
+Create three files:
+
+minikube-ai/
+  app.py
+  requirements.txt
+  Dockerfile
+
+app.py:
+
+from flask import Flask, request, jsonify
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+app = Flask(__name__)
+
+X = np.array([[500], [1000], [1500]])
+y = np.array([25, 50, 75])
+
+model = LinearRegression()
+model.fit(X, y)
+
+@app.route("/")
+def home():
+    return "AI Model is running!"
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.get_json()
+    area = float(data["area"])
+    price = model.predict([[area]])[0]
+    return jsonify({"predicted_price": round(float(price), 2)})
+
+app.run(host="0.0.0.0", port=5000)
+
+requirements.txt:
+
+flask
+scikit-learn
+numpy
+
+Dockerfile:
+
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY app.py .
+EXPOSE 5000
+CMD ["python", "app.py"]
+
+5. BUILD AND LOAD THE DOCKER IMAGE
+
+Open terminal inside the minikube-ai folder.
+
+Build the image:
+
+docker build -t ai-model:v1 .
+
+Load it into Minikube:
+
+minikube image load ai-model:v1
+
+6. CREATE KUBERNETES FILE
+
+Create a file named deployment.yaml in the same folder.
+
+Write:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-model
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-model
+  template:
+    metadata:
+      labels:
+        app: ai-model
+    spec:
+      containers:
+      - name: ai-model
+        image: ai-model:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-model-service
+spec:
+  type: NodePort
+  selector:
+    app: ai-model
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30080
+
+7. DEPLOY THE AI APPLICATION
+
+Run:
+
+kubectl apply -f deployment.yaml
+
+Check the pod:
+
+kubectl get pods
+
+Check deployment:
+
+kubectl get deployments
+
+Check service:
+
+kubectl get services
+
+8. TEST THE APPLICATION
+
+Run:
+
+minikube service ai-model-service --url
+
+Open the URL shown in the browser. It should display:
+
+AI Model is running!
+
+To test prediction in PowerShell, use:
+
+curl.exe -X POST <URL>/predict -H "Content-Type: application/json" -d "{\"area\":1000}"
+
+Replace <URL> with the URL displayed by Minikube.
+
+Expected prediction:
+
+{"predicted_price":50.0}
+
+9. SCALE THE AI MODEL
+
+Check current pods:
+
+kubectl get pods
+
+Scale from 1 to 3 replicas:
+
+kubectl scale deployment ai-model --replicas=3
+
+Check the replicas:
+
+kubectl get deployment ai-model
+kubectl get pods
+
+Scale back to 1:
+
+kubectl scale deployment ai-model --replicas=1
+
+10. USEFUL COMMANDS
+
+View all resources:
+kubectl get all
+
+View application logs:
+kubectl logs deployment/ai-model
+
+Delete the deployment and service:
+kubectl delete -f deployment.yaml
+
+Stop Minikube:
+minikube stop
+
+11. RESULT
+
+Successfully created a local Kubernetes cluster using Minikube, deployed a Dockerized AI model, tested its prediction API, and scaled the deployment from one pod to three pods.
+
+12. VIVA QUESTIONS
+
+Q1. What is Kubernetes?
+Ans. A platform used to deploy, manage, and scale containerized applications.
+
+Q2. What is Minikube?
+Ans. A tool that runs a local Kubernetes cluster.
+
+Q3. What is kubectl?
+Ans. A command-line tool used to manage Kubernetes.
+
+Q4. What is a Pod?
+Ans. The smallest deployable unit in Kubernetes.
+
+Q5. What is a Deployment?
+Ans. It manages application pods and replicas.
+
+Q6. What is a Service?
+Ans. It provides network access to pods.
+
+Q7. What is scaling?
+Ans. Increasing or decreasing the number of running pods.
+
+Q8. Which command scales the AI model to three replicas?
+Ans. kubectl scale deployment ai-model --replicas=3
+
+Q9. What is Minikube used for?
+Ans. To develop and test Kubernetes applications locally.
+
+Q10. What is a NodePort?
+Ans. It exposes a Kubernetes Service through a port on the cluster node.
+
+END OF PRACTICAL
