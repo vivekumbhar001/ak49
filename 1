@@ -1,0 +1,181 @@
+# EXPERIMENT 1: Git Repository and GitHub
+
+## Aim
+To set up a Git repository for a data science project and push it to GitHub to manage version control, track changes, and ensure code stability.
+
+## Software Required
+- Ubuntu Terminal
+- Git
+- GitHub
+- Python
+
+## Theory
+Git is a version control system used to track changes in code.
+
+GitHub is an online platform used to store and share Git repositories.
+
+Version control helps maintain different versions of code and recover previous versions if needed.
+
+## Program / Commands with Labels and Meaning
+
+### 1. Create project folder
+```bash
+mkdir datascience
+```
+Meaning: Creates a folder named `datascience`.
+
+### 2. Open project folder
+```bash
+cd datascience
+```
+Meaning: Moves into the project folder.
+
+### 3. Create Python file
+```bash
+echo 'print("Hello Data Science")' > app.py
+```
+Meaning: Creates a Python file named `app.py` containing a print statement.
+
+### 4. Initialize Git repository
+```bash
+git init
+```
+Meaning: Initializes Git in the project folder.
+
+### 5. Add file to Git
+```bash
+git add app.py
+```
+Meaning: Adds the file to Git's tracking area.
+
+### 6. Commit changes
+```bash
+git commit -m "First commit"
+```
+Meaning: Saves the first version of the project.
+
+### 7. Rename branch
+```bash
+git branch -M main
+```
+Meaning: Renames the current branch to `main`.
+
+### 8. Connect to GitHub repository
+```bash
+git remote add origin https://github.com/USERNAME/REPOSITORY.git
+```
+Meaning: Connects the local repository to GitHub.
+
+Replace `USERNAME/REPOSITORY` with your actual GitHub username and repository name.
+
+### 9. Push project to GitHub
+```bash
+git push -u origin main
+```
+Meaning: Uploads the project to GitHub.
+
+### 10. Check repository status
+```bash
+git status
+```
+Meaning: Shows the current status of files.
+
+### 11. View commit history
+```bash
+git log --oneline
+```
+Meaning: Displays previous commits.
+
+### 12. Track updated files
+```bash
+git add .
+```
+Meaning: Adds all changed files to Git.
+
+### 13. Save updated version
+```bash
+git commit -m "Updated code"
+```
+Meaning: Saves the latest changes.
+
+### 14. Upload updated code
+```bash
+git push
+```
+Meaning: Uploads the latest commit to GitHub.
+
+## Expected Output
+
+After running `git init`:
+```text
+Initialized empty Git repository
+```
+
+After running `git commit`:
+```text
+[main abc1234] First commit
+1 file changed
+create mode 100644 app.py
+```
+
+After running `git push`:
+```text
+To https://github.com/USERNAME/REPOSITORY.git
+ * [new branch] main -> main
+```
+
+After running `git status`:
+```text
+On branch main
+nothing to commit, working tree clean
+```
+
+## Result
+Successfully created a Git repository for the data science project and pushed the code to GitHub for version control and change tracking.
+
+## Viva Questions and Answers
+
+### Q1. What is Git?
+Git is a version control system used to track changes in code.
+
+### Q2. What is GitHub?
+GitHub is an online platform used to store and share Git repositories.
+
+### Q3. What is a repository?
+A repository is a project folder managed by Git.
+
+### Q4. What is version control?
+Version control is a system used to track and manage changes in files.
+
+### Q5. What is a commit?
+A commit saves a version of the code.
+
+### Q6. What is push?
+Push uploads local code to GitHub.
+
+### Q7. What is `git init`?
+It initializes a new Git repository.
+
+### Q8. What is `git add`?
+It adds files to Git's tracking area.
+
+### Q9. What is `git status`?
+It shows the current status of files in the repository.
+
+### Q10. What is `git log`?
+It displays the commit history.
+
+### Q11. Why do we use GitHub?
+To store code online, share projects, and collaborate with others.
+
+### Q12. What is the difference between Git and GitHub?
+Git is a version control tool, while GitHub is an online platform for hosting Git repositories.
+
+## Easy Command Memory
+
+`init → add → commit → push`
+
+- `init` = Start Git
+- `add` = Add files
+- `commit` = Save version
+- `push` = Upload to GitHub
