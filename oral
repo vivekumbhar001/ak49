@@ -1,0 +1,421 @@
+GIT AND DEVOPS PRACTICAL VIVA QUESTIONS WITH ANSWERS
+
+============================================================
+PART A: GIT VIVA QUESTIONS
+============================================================
+
+1. What is Git?
+Answer:
+Git is a free, open-source version control system. It helps developers track changes in source code and work together on projects.
+
+2. What is the difference between Git and GitHub?
+Answer:
+Git is a version control tool installed on a computer.
+GitHub is an online platform used to store Git repositories and collaborate with other developers.
+
+3. Why do we use version control?
+Answer:
+Version control tracks changes in files, keeps a history of changes, allows developers to work together, and helps restore an earlier version when needed.
+
+4. What is a repository?
+Answer:
+A repository, or repo, is a storage location that contains project files and their version history.
+
+5. What is the difference between a local repository and a remote repository?
+Answer:
+A local repository is stored on our computer.
+A remote repository is stored on a server or online platform such as GitHub.
+
+6. What is the purpose of git init?
+Answer:
+The git init command creates a new Git repository in the current project folder.
+
+Command:
+git init
+
+7. What is the use of git clone?
+Answer:
+git clone copies an existing remote repository to our computer.
+
+Command:
+git clone https://github.com/username/repository.git
+
+8. What is the difference between git add and git commit?
+Answer:
+git add moves changed files to the staging area.
+git commit saves the staged changes in the repository history.
+
+Commands:
+git add .
+git commit -m "First commit"
+
+9. What does git status do?
+Answer:
+It shows the current status of files, including modified, untracked, and staged files.
+
+Command:
+git status
+
+10. What is a branch in Git?
+Answer:
+A branch is a separate line of development. It allows developers to work on new features without directly changing the main branch.
+
+11. How do you create a new branch?
+Answer:
+Use git branch to create a branch, or git switch -c to create and switch to it.
+
+Commands:
+git branch feature
+git switch feature
+
+Or in one command:
+git switch -c feature
+
+12. What is the difference between git merge and git rebase?
+Answer:
+git merge combines changes from another branch and usually creates a merge commit.
+git rebase moves or reapplies commits on top of another branch to create a more linear history.
+
+For beginners, merge is often easier and safer for shared branches. Avoid rebasing commits that other developers have already based work on.
+
+13. What is a merge conflict, and how do you resolve it?
+Answer:
+A merge conflict occurs when Git cannot automatically combine changes, commonly because two branches changed the same part of a file.
+
+Steps to resolve:
+1. Run git status to find conflicted files.
+2. Open the conflicted file.
+3. Choose or combine the correct code.
+4. Remove conflict markers such as <<<<<<<, =======, and >>>>>>>.
+5. Save the file.
+6. Stage and commit the resolved file.
+
+Commands:
+git status
+git add filename
+git commit -m "Resolve merge conflict"
+
+14. What is the purpose of git push and git pull?
+Answer:
+git push uploads local commits to a remote repository.
+git pull downloads remote changes and integrates them into the current branch.
+
+Commands:
+git push
+git pull
+
+15. What is a pull request?
+Answer:
+A pull request is a GitHub feature used to request that changes from one branch be reviewed and merged into another branch. It supports code review and discussion.
+
+16. What is the difference between git fetch and git pull?
+Answer:
+git fetch downloads new information from the remote repository but does not merge it into the current branch.
+git pull downloads remote changes and integrates them into the current branch.
+
+Commands:
+git fetch
+git pull
+
+17. What is .gitignore?
+Answer:
+.gitignore is a text file that tells Git which untracked files or folders should be ignored, such as temporary files, cache folders, and local secrets.
+
+Example .gitignore:
+__pycache__/
+*.pyc
+.env
+venv/
+
+Important: .gitignore does not automatically stop tracking a file that Git is already tracking.
+
+18. How can you check the commit history in Git?
+Answer:
+Use git log to display commit history.
+
+Commands:
+git log
+git log --oneline
+
+19. What is the use of git checkout or git switch?
+Answer:
+These commands are used to change branches.
+git switch is the newer, clearer command for switching branches.
+git checkout can also restore files or switch branches.
+
+Commands:
+git switch main
+git switch feature
+
+20. How do you undo a commit in Git?
+Answer:
+It depends on whether the commit has been shared.
+
+To undo the latest commit but keep changes staged:
+git reset --soft HEAD~1
+
+To undo the latest commit and keep changes in the working folder:
+git reset HEAD~1
+
+To safely undo a commit that has already been pushed:
+git revert HEAD
+
+git revert creates a new commit that reverses the earlier commit. For shared branches, revert is usually safer than reset.
+
+============================================================
+PART B: DEVOPS VIVA QUESTIONS
+============================================================
+
+21. What is DevOps?
+Answer:
+DevOps is a combination of Development and Operations practices. It improves collaboration and automates building, testing, releasing, and maintaining software.
+
+22. Why is DevOps important in software development?
+Answer:
+DevOps helps deliver software faster, reduces manual work, improves collaboration, finds errors earlier, and supports reliable releases.
+
+23. What is the difference between Development and Operations teams?
+Answer:
+Development teams write and improve application code.
+Operations teams manage deployment, servers, infrastructure, availability, and application monitoring.
+DevOps encourages both teams to work together.
+
+24. What is the DevOps lifecycle?
+Answer:
+The DevOps lifecycle is a continuous process that commonly includes:
+Plan -> Code -> Build -> Test -> Release -> Deploy -> Operate -> Monitor
+
+Feedback from monitoring helps improve the next development cycle.
+
+25. What is Continuous Integration (CI)?
+Answer:
+CI is the practice of frequently combining code changes into a shared repository and automatically building and testing the code.
+
+26. What is Continuous Delivery (CD)?
+Answer:
+Continuous Delivery automatically prepares tested software for release. The final production deployment may require approval.
+
+27. What is the difference between Continuous Delivery and Continuous Deployment?
+Answer:
+Continuous Delivery prepares every successful change for release, but production deployment may need manual approval.
+Continuous Deployment automatically releases every change that passes the required tests to production.
+
+28. What is a CI/CD pipeline?
+Answer:
+A CI/CD pipeline is an automated sequence of steps that takes code from the repository through building, testing, packaging, and deployment.
+
+Example:
+Code Push -> Build -> Test -> Docker Image -> Deploy
+
+29. What is Jenkins?
+Answer:
+Jenkins is an open-source automation server. It is used to create CI/CD pipelines for building, testing, and deploying applications.
+
+30. What is Docker?
+Answer:
+Docker is a platform used to build, package, and run applications in containers.
+
+31. What is a container?
+Answer:
+A container is an isolated environment that runs an application with the libraries and dependencies it needs.
+
+32. What is the difference between a virtual machine and a container?
+Answer:
+A virtual machine runs a separate guest operating system on virtualized hardware.
+A container shares the host operating system kernel and isolates the application and its dependencies.
+Containers are generally lighter and start faster than virtual machines.
+
+33. What is Kubernetes?
+Answer:
+Kubernetes is a container orchestration platform. It deploys, manages, scales, and monitors containerized applications.
+
+============================================================
+PART C: GIT AND DEVOPS PRACTICAL VIVA
+============================================================
+
+34. How do you upload a project from your computer to GitHub?
+Answer:
+1. Create an empty repository on GitHub.
+2. Open the project folder in the terminal.
+3. Initialize Git.
+4. Add and commit project files.
+5. Connect the local repository to GitHub.
+6. Push the code.
+
+Commands:
+
+git init
+git add .
+git commit -m "First commit"
+git branch -M main
+git remote add origin https://github.com/USERNAME/REPOSITORY.git
+git push -u origin main
+
+Replace USERNAME and REPOSITORY with your GitHub details.
+
+35. How do you create and switch to a new branch?
+Answer:
+Use:
+
+git switch -c feature
+
+This creates a branch named feature and switches to it.
+
+36. How do multiple developers work on the same project using Git?
+Answer:
+1. The project owner shares the GitHub repository.
+2. Developers clone the repository.
+3. Each developer creates a separate branch.
+4. They make changes and commit them.
+5. They push their branches to GitHub.
+6. They create pull requests.
+7. Changes are reviewed and merged into the main branch.
+8. Developers pull the latest changes.
+
+37. How do you resolve a merge conflict?
+Answer:
+Open the conflicted file, select or combine the required changes, remove Git conflict markers, save the file, then stage and commit it.
+
+Commands:
+git status
+git add .
+git commit -m "Resolve conflict"
+
+38. How can Git be integrated with Jenkins?
+Answer:
+Jenkins connects to a Git repository. When new code is pushed or detected by polling, Jenkins checks out the code and starts the configured pipeline. The pipeline can then build, test, and deploy the application.
+
+39. How does a CI/CD pipeline deploy an application?
+Answer:
+The pipeline gets the latest code, builds the application, runs tests, creates a Docker image, pushes the image to a registry, and deploys it to a server or Kubernetes cluster.
+
+40. How do Docker containers help in deployment?
+Answer:
+Containers package the application and its dependencies. This makes the application easier to move and run consistently across development, testing, and production environments.
+
+============================================================
+PART D: IMPORTANT GIT COMMANDS
+============================================================
+
+1. Initialize a repository:
+git init
+
+2. Copy a remote repository:
+git clone URL
+
+3. Check file status:
+git status
+
+4. Add all changes to staging:
+git add .
+
+5. Commit staged changes:
+git commit -m "message"
+
+6. List branches:
+git branch
+
+7. Create and switch to a branch:
+git switch -c branch-name
+
+8. Switch to an existing branch:
+git switch branch-name
+
+9. Merge another branch into the current branch:
+git merge branch-name
+
+10. Upload commits:
+git push
+
+11. Download and integrate remote changes:
+git pull
+
+12. Download remote updates without merging:
+git fetch
+
+13. View commit history:
+git log
+
+14. View short commit history:
+git log --oneline
+
+15. Show remote repository addresses:
+git remote -v
+
+16. Connect a remote repository:
+git remote add origin URL
+
+17. Rename current branch to main:
+git branch -M main
+
+18. Push main branch and set upstream:
+git push -u origin main
+
+19. Unstage a file:
+git restore --staged filename
+
+20. Discard local changes in a file:
+git restore filename
+
+WARNING:
+git restore filename discards uncommitted changes in that file. Use it carefully.
+
+============================================================
+PART E: IMPORTANT DIFFERENCES TO REMEMBER
+============================================================
+
+Git vs GitHub:
+Git = version control tool.
+GitHub = online hosting and collaboration platform.
+
+git add vs git commit:
+add = stage changes.
+commit = save staged changes in history.
+
+git fetch vs git pull:
+fetch = download remote updates only.
+pull = fetch and integrate remote updates.
+
+git merge vs git rebase:
+merge = combine branch histories.
+rebase = replay commits on a new base.
+
+Local vs remote repository:
+local = on your computer.
+remote = on a server such as GitHub.
+
+Continuous Delivery vs Continuous Deployment:
+Delivery = production release may need approval.
+Deployment = production release is automatic after checks pass.
+
+Docker vs Kubernetes:
+Docker = builds and runs containers.
+Kubernetes = manages and orchestrates containers.
+
+============================================================
+QUICK REVISION: MOST IMPORTANT COMMAND SEQUENCE
+============================================================
+
+For a new local project:
+
+git init
+git add .
+git commit -m "First commit"
+git branch -M main
+git remote add origin https://github.com/USERNAME/REPOSITORY.git
+git push -u origin main
+
+For everyday work:
+
+git status
+git add .
+git commit -m "Updated project"
+git pull
+git push
+
+For branch work:
+
+git switch -c feature
+git add .
+git commit -m "Added feature"
+git push -u origin feature
