@@ -1,0 +1,500 @@
+PRACTICAL: DOCKER COMPOSE FOR A WEB-BASED AI APP
+SIMPLE CODE VERSION
+
+TITLE:
+Use Docker Compose to manage three containers:
+1. Frontend
+2. AI Model
+3. Database
+
+============================================================
+1. AIM
+============================================================
+To create and run a simple web-based AI application using Docker Compose. The frontend accepts input, the AI model predicts an output, and the database stores the prediction.
+
+============================================================
+2. REQUIRED SOFTWARE
+============================================================
+1. Docker Desktop
+   Download: https://www.docker.com/products/docker-desktop/
+
+2. Visual Studio Code
+   Download: https://code.visualstudio.com/
+
+Open Docker Desktop and wait until it shows that Docker Engine is running.
+
+Check installation in VS Code Terminal:
+
+docker --version
+docker compose version
+
+============================================================
+3. CREATE PROJECT FOLDER
+============================================================
+Create a folder named:
+
+docker-ai-compose
+
+Open this folder in VS Code.
+
+Create this folder structure:
+
+docker-ai-compose/
+|
+|-- compose.yaml
+|
+|-- model/
+|    |-- Dockerfile
+|    |-- requirements.txt
+|    |-- app.py
+|
+|-- frontend/
+|    |-- index.html
+|
+|-- nginx/
+     |-- default.conf
+
+IMPORTANT:
+Make sure that compose.yaml is in the main folder.
+
+============================================================
+4. AI MODEL CODE - app.py
+============================================================
+Open the model folder and create app.py.
+
+Write this simple code:
+
+------------------------- app.py -------------------------
+
+from flask import Flask, request, jsonify
+from sklearn.linear_model import LinearRegression
+import numpy as np
+import psycopg2
+
+app = Flask(__name__)
+
+# Simple training data
+X = np.array([[500], [1000], [1500]])
+y = np.array([25, 50, 75])
+
+# Train the AI model
+model = LinearRegression()
+model.fit(X, y)
+
+# Connect to PostgreSQL database
+def connect_db():
+    return psycopg2.connect(
+        host="db",
+        database="aidb",
+        user="aiuser",
+        password="pass123"
+    )
+
+# Create database table
+conn = connect_db()
+cur = conn.cursor()
+cur.execute("""
+CREATE TABLE IF NOT EXISTS predictions (
+    id SERIAL PRIMARY KEY,
+    area INTEGER,
+    price FLOAT
+)
+""")
+conn.commit()
+cur.close()
+conn.close()
+
+# Home page API
+@app.route("/api/health")
+def home():
+    return "AI Model is running!"
+
+# Prediction API
+@app.route("/api/predict", methods=["POST"])
+def predict():
+    data = request.get_json()
+    area = int(data["area"])
+
+    price = model.predict([[area]])[0]
+
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO predictions (area, price) VALUES (%s, %s)",
+        (area, float(price))
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({
+        "area": area,
+        "predicted_price": round(float(price), 2)
+    })
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+
+-----------------------------------------------------------
+
+SIMPLE EXPLANATION:
+- Flask creates the API.
+- LinearRegression is the machine learning algorithm.
+- model.fit() trains the model.
+- The API receives the house area.
+- The model predicts the price.
+- PostgreSQL stores the area and predicted price.
+- The name "db" is used to connect to the database container.
+
+NOTE:
+This is only a small learning example. It is not a real house-price prediction system.
+
+============================================================
+5. CREATE requirements.txt
+============================================================
+Inside the model folder, create requirements.txt.
+
+Write:
+
+Flask
+scikit-learn
+numpy
+psycopg2-binary
+
+These are the Python libraries used by the AI application.
+
+============================================================
+6. CREATE Dockerfile
+============================================================
+Inside the model folder, create a file named Dockerfile.
+
+Write:
+
+------------------------- Dockerfile -------------------------
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt
+
+COPY app.py .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+
+-----------------------------------------------------------
+
+EXPLANATION:
+- FROM: Selects the Python image.
+- WORKDIR: Sets the working folder.
+- COPY: Copies files into the image.
+- RUN: Installs required libraries.
+- EXPOSE: Documents port 5000.
+- CMD: Runs the Python application.
+
+============================================================
+7. CREATE FRONTEND - index.html
+============================================================
+Open the frontend folder and create index.html.
+
+Write:
+
+------------------------- index.html -------------------------
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Price Prediction</title>
+</head>
+<body>
+    <h2>AI House Price Prediction</h2>
+
+    <input type="number" id="area" placeholder="Enter area">
+    <button onclick="predict()">Predict</button>
+
+    <h3 id="result"></h3>
+
+    <script>
+        async function predict() {
+            let area = document.getElementById("area").value;
+
+            let response = await fetch("/api/predict", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({area: area})
+            });
+
+            let data = await response.json();
+
+            document.getElementById("result").innerText =
+                "Predicted Price: " + data.predicted_price + " lakhs";
+        }
+    </script>
+</body>
+</html>
+
+-----------------------------------------------------------
+
+EXPLANATION:
+- HTML creates the webpage.
+- Input accepts the house area.
+- Button sends the area to the AI model API.
+- The result is displayed on the webpage.
+
+============================================================
+8. CREATE NGINX CONFIGURATION
+============================================================
+Open the nginx folder and create default.conf.
+
+Write:
+
+------------------------- default.conf -------------------------
+
+server {
+    listen 80;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://model-api:5000/api/;
+    }
+}
+
+-----------------------------------------------------------
+
+EXPLANATION:
+Nginx displays the frontend webpage and forwards API requests to the AI model container.
+
+============================================================
+9. CREATE DOCKER COMPOSE FILE - compose.yaml
+============================================================
+Go to the main docker-ai-compose folder.
+
+Create compose.yaml and write:
+
+------------------------- compose.yaml -------------------------
+
+services:
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: aidb
+      POSTGRES_USER: aiuser
+      POSTGRES_PASSWORD: pass123
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aiuser -d aidb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  model-api:
+    build: ./model
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - model-api
+
+volumes:
+  dbdata:
+
+-----------------------------------------------------------
+
+SIMPLE EXPLANATION:
+- db: Creates the PostgreSQL database container.
+- model-api: Builds and runs the AI model container.
+- frontend: Runs the Nginx frontend container.
+- ports: Opens the webpage on port 8080.
+- volumes: Stores database information and shares the frontend files.
+- depends_on: Starts the database before the AI model.
+
+============================================================
+10. RUN THE APPLICATION
+============================================================
+STEP 1:
+Open Docker Desktop and wait until it is running.
+
+STEP 2:
+Open VS Code Terminal.
+
+STEP 3:
+Make sure terminal is inside the docker-ai-compose folder.
+
+STEP 4:
+Check the Compose file:
+
+docker compose config
+
+STEP 5:
+Build and start all three containers:
+
+docker compose up --build -d
+
+STEP 6:
+Check containers:
+
+docker compose ps
+
+You should see:
+- db
+- model-api
+- frontend
+
+============================================================
+11. TEST THE WEB APPLICATION
+============================================================
+STEP 1:
+Open Chrome.
+
+STEP 2:
+Visit:
+
+http://localhost:8080
+
+STEP 3:
+Enter:
+
+1000
+
+STEP 4:
+Click Predict.
+
+EXPECTED OUTPUT:
+
+Predicted Price: 50 lakhs
+
+Try entering 1500. The predicted price should be 75 lakhs.
+
+============================================================
+12. CHECK DATABASE RECORDS
+============================================================
+Run this command in the VS Code Terminal:
+
+docker compose exec db psql -U aiuser -d aidb -c "SELECT * FROM predictions;"
+
+It displays the area and predicted price saved in PostgreSQL.
+
+============================================================
+13. IMPORTANT DOCKER COMPOSE COMMANDS
+============================================================
+
+Start all containers:
+
+docker compose up -d
+
+Build and start:
+
+docker compose up --build -d
+
+Check containers:
+
+docker compose ps
+
+View logs:
+
+docker compose logs
+
+Stop and remove containers:
+
+docker compose down
+
+Restart containers:
+
+docker compose restart
+
+IMPORTANT:
+The database volume is kept when you run docker compose down.
+To delete the database data as well, run:
+
+docker compose down -v
+
+Do not use -v when you need to keep saved records.
+
+============================================================
+14. COMMON ERRORS
+============================================================
+1. Docker is not running:
+   Open Docker Desktop and wait until the engine starts.
+
+2. Website is not opening:
+   Run docker compose ps and check that frontend is running.
+
+3. Port 8080 is busy:
+   Change "8080:80" to "8081:80" in compose.yaml.
+   Then run docker compose up -d.
+   Open http://localhost:8081.
+
+4. Database connection error:
+   Check whether db is healthy:
+
+   docker compose ps
+
+   View database logs:
+
+   docker compose logs db
+
+5. Python code changed:
+   Rebuild the model container:
+
+   docker compose up --build -d model-api
+
+============================================================
+15. RESULT
+============================================================
+Successfully created a web-based AI application with three containers using Docker Compose:
+1. Frontend container.
+2. AI model container.
+3. PostgreSQL database container.
+
+The frontend accepts input, the AI model predicts the price, and the database stores the prediction.
+
+============================================================
+16. VIVA QUESTIONS AND ANSWERS
+============================================================
+Q1. What is Docker Compose?
+Ans. It is a tool used to manage multiple Docker containers using one YAML file.
+
+Q2. What is compose.yaml?
+Ans. It is the configuration file that defines the application services.
+
+Q3. How many containers are used in this practical?
+Ans. Three containers: frontend, AI model, and database.
+
+Q4. What is the purpose of the frontend?
+Ans. It accepts input from the user and displays the prediction.
+
+Q5. What is the purpose of the AI model?
+Ans. It predicts the house price based on the given area.
+
+Q6. What is PostgreSQL?
+Ans. PostgreSQL is a relational database management system.
+
+Q7. What is a Docker volume?
+Ans. It stores data even when a container is removed.
+
+Q8. What does docker compose up do?
+Ans. It creates and starts all services.
+
+Q9. What does docker compose down do?
+Ans. It stops and removes the containers and network for the Compose project.
+
+Q10. What is port mapping?
+Ans. It connects a port on the computer to a port inside a container.
