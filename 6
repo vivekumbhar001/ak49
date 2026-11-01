@@ -1,0 +1,400 @@
+AI24305: VSEC - DEVOPS AND GIT
+EXPERIMENT 6
+Create a Docker container for an AI model and test it locally to ensure consistent performance across environments.
+
+============================================================
+A. AIM
+============================================================
+To create a Docker container for an AI model and test it on a local computer so that the model can run consistently across different environments.
+
+============================================================
+B. SOFTWARE REQUIRED
+============================================================
+1. Windows 10/11 computer.
+2. Docker Desktop.
+3. Visual Studio Code (VS Code) or Notepad.
+4. Internet connection for downloading software and Python packages.
+
+Download links:
+Docker Desktop: https://www.docker.com/products/docker-desktop/
+Visual Studio Code: https://code.visualstudio.com/
+
+NOTE:
+Docker Desktop on Windows may require WSL 2 and hardware virtualization to be enabled. Follow the Docker Desktop installer instructions. Restart the computer if the installer asks you to.
+
+============================================================
+C. INTRODUCTION / THEORY
+============================================================
+Docker is a platform used to package an application and its required dependencies into a container.
+
+A container includes the application code, runtime, libraries, and dependencies needed to run the application. This helps the application run consistently on different computers.
+
+Important terms:
+1. Docker image: A read-only template used to create a container.
+2. Docker container: A running instance of a Docker image.
+3. Dockerfile: A text file containing instructions to build a Docker image.
+4. requirements.txt: A file listing Python libraries required by the application.
+5. Docker Engine: The service that builds and runs containers.
+6. Port: A communication endpoint used to access an application.
+
+Benefits:
+- Consistent execution across environments.
+- Easy deployment and sharing.
+- Dependency isolation.
+- Reproducible setup.
+- Simplified testing and maintenance.
+
+============================================================
+D. DOWNLOAD AND INSTALL REQUIRED SOFTWARE
+============================================================
+STEP 1: Install Docker Desktop
+1. Open the Docker Desktop official link above.
+2. Download Docker Desktop for Windows.
+3. Run the downloaded installer.
+4. Keep the WSL 2 option enabled if offered.
+5. Finish installation and restart the computer if required.
+6. Open Docker Desktop.
+7. Wait until Docker indicates that it is running.
+
+STEP 2: Install Visual Studio Code
+1. Open the VS Code official link above.
+2. Download and install VS Code.
+3. Launch VS Code.
+
+STEP 3: Verify Docker
+1. Open Windows Terminal, Command Prompt, or PowerShell.
+2. Run:
+
+   docker --version
+
+3. Then run:
+
+   docker run hello-world
+
+If the hello-world message appears, Docker is installed and working.
+
+============================================================
+E. CREATE THE PROJECT
+============================================================
+STEP 1: Create a folder
+1. Create a folder on your Desktop named:
+
+   docker-ai-model
+
+2. Open VS Code.
+3. Select File -> Open Folder.
+4. Select the docker-ai-model folder.
+
+STEP 2: Create three files
+Create the following files in the folder:
+- app.py
+- requirements.txt
+- Dockerfile
+
+The folder structure should be:
+
+docker-ai-model/
+    app.py
+    requirements.txt
+    Dockerfile
+
+============================================================
+F. WRITE THE MODEL APPLICATION
+============================================================
+Open app.py and write the following code:
+
+------------------------------------------------------------
+app.py
+------------------------------------------------------------
+from flask import Flask, request, jsonify
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+app = Flask(__name__)
+
+# Example training data:
+# House area (square feet) -> Price (lakhs)
+X = np.array([[500], [800], [1000], [1200], [1500]])
+y = np.array([25, 40, 50, 60, 75])
+
+# Create and train the AI/ML model
+model = LinearRegression()
+model.fit(X, y)
+
+@app.route("/")
+def home():
+    return "AI Model API is running!"
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.get_json()
+
+    if not data or "area" not in data:
+        return jsonify({"error": "Please provide area"}), 400
+
+    area = float(data["area"])
+    prediction = model.predict(np.array([[area]]))[0]
+
+    return jsonify({
+        "area": area,
+        "predicted_price_lakhs": round(float(prediction), 2)
+    })
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+------------------------------------------------------------
+
+Explanation:
+- Flask creates a small web API.
+- NumPy stores the sample training data.
+- LinearRegression is the machine learning model.
+- model.fit() trains the model.
+- The /predict endpoint receives an area and returns the predicted price.
+- host="0.0.0.0" allows the application to be accessed from outside the container.
+- port=5000 is the port used by the application.
+
+This is a simple demonstration model. It is not intended for real house-price estimation.
+
+============================================================
+G. WRITE THE REQUIREMENTS FILE
+============================================================
+Open requirements.txt and write:
+
+flask
+scikit-learn
+numpy
+
+Explanation:
+This file lists the Python libraries that the application needs.
+
+============================================================
+H. CREATE THE DOCKERFILE
+============================================================
+Open Dockerfile (no file extension) and write:
+
+------------------------------------------------------------
+Dockerfile
+------------------------------------------------------------
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app.py .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+------------------------------------------------------------
+
+Explanation of each instruction:
+- FROM: Uses a Python 3.11 base image.
+- WORKDIR: Sets /app as the working directory inside the image.
+- COPY requirements.txt .: Copies the dependency list into the image.
+- RUN: Installs the required Python packages.
+- COPY app.py .: Copies the application code into the image.
+- EXPOSE 5000: Documents the port used by the application.
+- CMD: Starts the application when the container runs.
+
+============================================================
+I. BUILD THE DOCKER IMAGE
+============================================================
+STEP 1:
+Open the VS Code terminal:
+Terminal -> New Terminal
+
+Make sure the terminal is inside the docker-ai-model folder.
+
+STEP 2:
+Run:
+
+docker build -t ai-model-app .
+
+Explanation:
+- docker build: Builds an image.
+- -t ai-model-app: Names the image ai-model-app.
+- . : Uses the current folder as the build context.
+
+Wait for the build to complete. The first build may take time because Docker downloads the Python image and packages.
+
+STEP 3:
+Check the image:
+
+docker images
+
+You should see an image named ai-model-app.
+
+============================================================
+J. RUN THE DOCKER CONTAINER
+============================================================
+Run:
+
+docker run -d --name ai-model-container -p 5000:5000 ai-model-app
+
+Explanation:
+- docker run: Creates and starts a container.
+- -d: Runs it in the background.
+- --name ai-model-container: Assigns a name to the container.
+- -p 5000:5000: Maps port 5000 on your computer to port 5000 in the container.
+- ai-model-app: The image used to create the container.
+
+============================================================
+K. TEST THE APPLICATION
+============================================================
+STEP 1: Check the container:
+
+docker ps
+
+The container named ai-model-container should appear as running.
+
+STEP 2: Test the home page
+Open a browser and visit:
+
+http://localhost:5000
+
+Expected output:
+AI Model API is running!
+
+STEP 3: Test the prediction endpoint
+The /predict endpoint accepts a POST request with JSON data.
+
+If you have curl installed, run this in PowerShell or Terminal:
+
+curl.exe -X POST http://localhost:5000/predict -H "Content-Type: application/json" -d "{\"area\":1200}"
+
+Expected response will be similar to:
+
+{"area":1200.0,"predicted_price_lakhs":60.0}
+
+The prediction may be displayed with a slightly different decimal due to the model calculation.
+
+Alternative testing using Python:
+Create a separate file named test_api.py with:
+
+import requests
+
+response = requests.post(
+    "http://localhost:5000/predict",
+    json={"area": 1200}
+)
+
+print(response.status_code)
+print(response.json())
+
+Install requests if needed:
+
+pip install requests
+
+Then run:
+
+python test_api.py
+
+Expected:
+- Status code: 200
+- JSON output containing the area and predicted price.
+
+============================================================
+L. VIEW LOGS AND STOP THE CONTAINER
+============================================================
+View logs:
+
+docker logs ai-model-container
+
+Stop the container:
+
+docker stop ai-model-container
+
+Start it again:
+
+docker start ai-model-container
+
+Remove the container after stopping it:
+
+docker rm ai-model-container
+
+Remove the image (optional):
+
+docker rmi ai-model-app
+
+============================================================
+M. COMMON ERRORS AND SOLUTIONS
+============================================================
+1. "docker is not recognized"
+   - Docker Desktop may not be installed or running.
+   - Restart the terminal after installation.
+   - Open Docker Desktop and wait until it is running.
+
+2. Docker daemon / engine error
+   - Open Docker Desktop.
+   - Wait for Docker Engine to start.
+   - Check WSL 2 setup if the error continues.
+
+3. Port 5000 is already in use
+   - Run the container with another host port:
+
+     docker run -d --name ai-model-container -p 5001:5000 ai-model-app
+
+   - Then open http://localhost:5001
+
+4. Container exits immediately
+   - Check logs:
+
+     docker logs ai-model-container
+
+   - Verify app.py and Dockerfile are saved correctly.
+
+5. Cannot access the API
+   - Confirm the container is running:
+
+     docker ps
+
+   - Confirm the browser uses http://localhost:5000
+   - Confirm the Docker run command includes -p 5000:5000
+
+6. Name already in use
+   - Remove the old container:
+
+     docker rm -f ai-model-container
+
+   - Run the docker run command again.
+
+============================================================
+N. RESULT
+============================================================
+Successfully created a Docker image for a machine learning application, launched it as a container, and tested the application locally through its API. Docker helps maintain a consistent runtime environment by packaging the application and its dependencies.
+
+============================================================
+O. VIVA QUESTIONS AND ANSWERS
+============================================================
+Q1. What is Docker?
+Ans. Docker is a platform for packaging and running applications in isolated containers.
+
+Q2. What is a Docker image?
+Ans. A Docker image is a template used to create containers.
+
+Q3. What is a Docker container?
+Ans. A container is a running instance of a Docker image.
+
+Q4. What is a Dockerfile?
+Ans. A Dockerfile contains instructions for building a Docker image.
+
+Q5. Why do we use requirements.txt?
+Ans. It lists the Python packages required by the application.
+
+Q6. What is the purpose of docker build?
+Ans. It builds a Docker image from a Dockerfile.
+
+Q7. What is the purpose of docker run?
+Ans. It creates and starts a container from an image.
+
+Q8. What does port mapping mean?
+Ans. It connects a port on the host computer to a port inside the container.
+
+Q9. Why is Docker useful for AI/ML?
+Ans. It packages the model application and dependencies so the environment is consistent across machines.
+
+Q10. What is an API?
+Ans. An API allows one software application to communicate with another. In this experiment, the API receives input and returns a model prediction.
