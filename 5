@@ -1,0 +1,200 @@
+# Experiment 5: Jenkins Automated Build Using GitHub
+
+## Problem Statement
+Set up Jenkins to trigger automated builds whenever new code is pushed to GitHub for your AI/DS project.
+
+## Aim
+To configure Jenkins to automatically trigger a build whenever new code is pushed to a GitHub repository.
+
+## Software Required
+1. Git
+2. GitHub
+3. Jenkins
+4. Java
+5. Web browser
+
+## Theory
+
+**Jenkins** is an automation tool used to build and test software projects.
+
+In an AI/DS project, developers regularly update code and push it to GitHub. Jenkins can automatically detect these changes and start a build.
+
+This process is called **Continuous Integration (CI)**.
+
+Jenkins helps developers:
+- Automate builds.
+- Detect errors early.
+- Reduce manual work.
+- Check code changes regularly.
+- Improve project development.
+
+## Important Terms
+
+| Term | Meaning |
+|---|---|
+| Jenkins | Automation tool used to build and test projects |
+| GitHub | Online platform for storing project code |
+| Git | Tool used to track code changes |
+| Job | A task configured in Jenkins |
+| Build | Process of running configured build steps |
+| Webhook | Notification sent from GitHub to Jenkins |
+| CI | Continuous Integration |
+
+## Procedure
+
+### Step 1: Create a GitHub Repository
+1. Open GitHub.
+2. Create a repository named `AI-DS-project`.
+3. Upload or push your project files to the repository.
+
+### Step 2: Open Jenkins
+1. Install and start Jenkins.
+2. Open a browser.
+3. Enter:
+
+   `http://localhost:8080`
+
+4. Sign in to Jenkins.
+
+### Step 3: Create a Jenkins Job
+1. Click **New Item**.
+2. Enter the job name:
+
+   `AI-DS-Automatic-Build`
+
+3. Select **Freestyle project**.
+4. Click **OK**.
+
+A Jenkins job is a task that Jenkins performs automatically.
+
+### Step 4: Connect the GitHub Repository
+1. Open the job configuration.
+2. Under **Source Code Management**, select **Git**.
+3. Enter your GitHub repository URL.
+4. Enter the branch name:
+
+   `*/main`
+
+5. Save the configuration.
+
+This allows Jenkins to fetch the project code from GitHub.
+
+### Step 5: Configure Build Trigger
+1. Open the job configuration.
+2. Go to **Build Triggers**.
+3. Select:
+
+   **GitHub hook trigger for GITScm polling**
+
+4. Save the configuration.
+
+This tells Jenkins to start a build when GitHub sends a push notification.
+
+### Step 6: Configure GitHub Webhook
+1. Open your GitHub repository.
+2. Go to **Settings → Webhooks → Add webhook**.
+3. Enter the Jenkins webhook URL:
+
+   `http://<JENKINS-SERVER>/github-webhook/`
+
+4. Select **application/json** as the content type.
+5. Select **Just the push event**.
+6. Click **Add webhook**.
+
+Note: For a real webhook, GitHub must be able to reach the Jenkins server. A Jenkins server running only at `localhost` cannot be accessed directly by GitHub.
+
+### Step 7: Configure the Build Step
+1. Open the Jenkins job configuration.
+2. Under **Build Steps**, select **Execute shell**.
+3. Enter the following command:
+
+```bash
+echo "AI/DS project build successful"
+```
+
+4. Click **Save**.
+
+This command demonstrates that Jenkins is running the build step.
+
+### Step 8: Test Automatic Build
+1. Make a small change to a project file.
+2. Add and commit the change using Git.
+3. Push the code to GitHub:
+
+```bash
+git add .
+git commit -m "Update project"
+git push
+```
+
+4. GitHub sends a webhook to Jenkins.
+5. Jenkins automatically starts the build.
+6. Open the Jenkins job and check **Console Output**.
+
+## Working Flow
+
+GitHub Push → Webhook → Jenkins → Fetch Latest Code → Build → Result
+
+## Expected Output
+
+The Jenkins console should display output similar to:
+
+```text
+Started by GitHub push
+Checking out code from GitHub
+AI/DS project build successful
+Finished: SUCCESS
+```
+
+If the build steps fail, Jenkins displays:
+
+`Finished: FAILURE`
+
+## Result
+Jenkins was configured to trigger an automated build whenever new code was pushed to the GitHub repository.
+
+## Viva Questions and Answers
+
+**1. What is Jenkins?**  
+Jenkins is an automation tool used to build and test software projects.
+
+**2. What is the aim of this experiment?**  
+To automatically trigger builds in Jenkins whenever new code is pushed to GitHub.
+
+**3. What is Continuous Integration?**  
+Continuous Integration is the practice of frequently integrating code changes and automatically building or testing them.
+
+**4. What is a Jenkins job?**  
+A Jenkins job is a task configured to perform actions such as building or testing a project.
+
+**5. What is a webhook?**  
+A webhook is a notification sent by GitHub to Jenkins when an event, such as a code push, occurs.
+
+**6. What happens when code is pushed to GitHub?**  
+GitHub sends a webhook to Jenkins, and Jenkins automatically starts the configured build.
+
+**7. What is a build?**  
+A build is the process of running configured steps to prepare or check a project.
+
+**8. What is the purpose of Jenkins in an AI/DS project?**  
+Jenkins can automatically build and test the project whenever code changes are pushed.
+
+**9. What does SUCCESS mean in Jenkins?**  
+It means the configured build steps completed successfully.
+
+**10. What is the difference between manual and automatic build?**  
+A manual build is started by a user, while an automatic build starts when a configured event occurs.
+
+**11. What is CI/CD?**  
+CI/CD stands for Continuous Integration and Continuous Delivery or Deployment. It helps automate integration, testing, and release processes.
+
+**12. Why is GitHub used in this experiment?**  
+GitHub stores the project code and notifies Jenkins when new code is pushed.
+
+## Easy Way to Remember
+
+**Push → Webhook → Jenkins → Build → SUCCESS/FAILURE**
+
+## Explanation to Tell the Teacher
+
+“Ma’am, in this experiment I connected a GitHub repository to Jenkins. I created a Jenkins job and configured it to trigger when code is pushed to GitHub. I also configured a GitHub webhook. When new code is pushed, GitHub notifies Jenkins, Jenkins fetches the latest code and runs the build step. The build result is displayed in the Jenkins console as SUCCESS or FAILURE.”
