@@ -1,0 +1,257 @@
+# EXPERIMENT 4: DevOps Principles for Machine Learning Projects
+
+## Aim
+To research and explain how DevOps principles, such as CI/CD, can improve deployment and updates for machine learning projects.
+
+## Software / Tools Required
+- Git and GitHub
+- Jenkins
+- Python
+- Docker
+- Machine Learning model
+
+## Theory
+
+DevOps is a combination of Development and Operations.
+
+It helps developers build, test, deploy, and maintain software efficiently.
+
+In machine learning projects, DevOps practices are called **MLOps (Machine Learning Operations)**.
+
+MLOps applies DevOps principles to machine learning model development, deployment, monitoring, and updating.
+
+## POINT 1: Continuous Integration (CI)
+
+### Explanation
+Continuous Integration means automatically checking and testing code whenever a developer makes changes and uploads them to GitHub.
+
+### Example
+A developer updates the Python code of a machine learning project.
+
+The CI system automatically:
+- Checks the code.
+- Runs tests.
+- Checks whether the code works correctly.
+
+### Benefit
+It detects errors early and improves code quality.
+
+## POINT 2: Continuous Delivery (CD)
+
+### Explanation
+Continuous Delivery means automatically preparing and delivering tested code or models for deployment.
+
+### Example
+After a machine learning model passes the required tests, the system prepares it for deployment.
+
+### Benefit
+It makes deployment faster and more reliable.
+
+## POINT 3: Continuous Deployment
+
+### Explanation
+Continuous Deployment means automatically deploying tested changes to the production environment.
+
+### Example
+When a new model passes all tests, it is automatically deployed to the application.
+
+### Benefit
+Users can receive updates quickly without manual deployment steps.
+
+## POINT 4: Continuous Training (CT)
+
+### Explanation
+Continuous Training means automatically retraining machine learning models using new data when needed.
+
+### Example
+A house-price prediction model can be retrained using new house-price data.
+
+### Benefit
+The model can adapt to changes in real-world data.
+
+## POINT 5: Version Control
+
+### Explanation
+Version control tracks changes in code, configuration, and model-related files.
+
+Git and GitHub are commonly used.
+
+### Example
+If a new model performs poorly, developers can return to a previous code or model version.
+
+### Benefit
+It improves collaboration and helps recover previous versions.
+
+## POINT 6: Automated Testing
+
+### Explanation
+Automated testing checks whether the code, data, and model work correctly.
+
+### Example
+Tests can check:
+- Whether the Python code runs.
+- Whether input data contains missing values.
+- Whether the model achieves the required accuracy.
+- Whether the prediction API works.
+
+### Benefit
+It reduces errors before deployment.
+
+## POINT 7: Continuous Monitoring
+
+### Explanation
+Continuous Monitoring checks the performance of the deployed application and machine learning model.
+
+### Example
+A model's accuracy may decrease when real-world data changes.
+
+Monitoring helps identify:
+- Model performance degradation.
+- Data drift.
+- Application errors.
+- Slow predictions.
+
+### Benefit
+It helps detect problems and determine when a model needs updating.
+
+## POINT 8: Automation
+
+### Explanation
+Automation means using tools to perform repetitive tasks without manual effort.
+
+### Example
+The system automatically tests, builds, and deploys the application after a code update.
+
+### Benefit
+It saves time and reduces manual errors.
+
+## HOW CI/CD WORKS IN A MACHINE LEARNING PROJECT
+
+### Workflow
+
+Developer updates code
+        ↓
+Code is pushed to GitHub
+        ↓
+CI automatically runs tests
+        ↓
+Model is trained and evaluated
+        ↓
+CD prepares or deploys the model
+        ↓
+Application is updated
+        ↓
+Model is monitored
+
+## EXAMPLE
+
+Suppose we develop a machine learning model to predict house prices.
+
+Initially, the model is trained using old data.
+
+Later, new house-price data becomes available.
+
+Using DevOps and MLOps:
+1. The developer updates the project.
+2. The code is pushed to GitHub.
+3. CI automatically checks the code and runs tests.
+4. The model is trained using updated data.
+5. The model is evaluated.
+6. CD deploys the approved model.
+7. Monitoring checks the model's performance.
+
+This process makes the machine learning application easier to update and maintain.
+
+## EXPECTED OUTPUT
+
+Example of a successful CI/CD pipeline:
+
+```text
+Code pushed to GitHub
+        |
+        v
+Build Started
+        |
+        v
+Tests Passed
+        |
+        v
+Model Evaluation Passed
+        |
+        v
+Deployment Successful
+        |
+        v
+Application Updated
+```
+
+Example status:
+
+```text
+Build: SUCCESS
+Tests: PASSED
+Model Evaluation: PASSED
+Deployment: SUCCESS
+```
+
+## BENEFITS OF DEVOPS IN MACHINE LEARNING
+
+1. Faster deployment of machine learning models.
+2. Automatic testing and updating.
+3. Reduced manual work.
+4. Improved model quality.
+5. Easy tracking of code and model versions.
+6. Better collaboration between developers and data scientists.
+7. Early detection of errors.
+8. Easier maintenance of deployed models.
+
+## RESULT
+Successfully researched and explained how DevOps principles, including CI/CD, automation, version control, continuous training, and monitoring, improve deployment and updates in machine learning projects.
+
+## VIVA QUESTIONS AND ANSWERS
+
+### Q1. What is DevOps?
+DevOps combines development and operations to improve software development, deployment, and maintenance.
+
+### Q2. What is MLOps?
+MLOps applies DevOps practices to machine learning development, deployment, monitoring, and updating.
+
+### Q3. What is CI?
+Continuous Integration automatically builds and tests code changes.
+
+### Q4. What is CD?
+Continuous Delivery or Continuous Deployment automates the process of preparing or deploying software updates.
+
+### Q5. What is Continuous Training?
+Continuous Training automatically retrains machine learning models using new data when required.
+
+### Q6. Why is CI/CD important in machine learning?
+It helps automate testing and deployment, making model updates faster and more reliable.
+
+### Q7. What is Git?
+Git is a version control system used to track code changes.
+
+### Q8. What is automated testing?
+Automated testing checks code and model behavior without requiring manual testing each time.
+
+### Q9. What is model monitoring?
+Model monitoring checks the performance and behavior of a deployed machine learning model.
+
+### Q10. What is data drift?
+Data drift occurs when real-world input data changes compared with the data used to train the model.
+
+### Q11. Name some DevOps tools.
+Git, GitHub, Jenkins, Docker, and Kubernetes.
+
+### Q12. What is the main benefit of MLOps?
+It makes machine learning systems easier to build, deploy, monitor, and update reliably.
+
+## EASY MEMORY
+
+CI = Test code
+
+CD = Deliver or deploy updates
+
+CT = Retrain model
+
+CM = Monitor model
