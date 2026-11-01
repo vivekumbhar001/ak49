@@ -1,0 +1,200 @@
+# EXPERIMENT 2: Git Branching, Merging and Conflict Resolution
+
+## Aim
+To create feature branches for a project, merge them, and resolve conflicts to maintain separate workspaces for team collaboration.
+
+## Software Required
+- Ubuntu Terminal
+- Git
+
+## Theory
+
+**Branch:** A separate workspace where we can make changes without affecting the main project.
+
+**Merge:** Combining changes from one branch into another branch.
+
+**Merge conflict:** Occurs when Git cannot automatically combine changes made to the same part of a file.
+
+## Commands with Labels and Meaning
+
+### 1. Open the project folder
+```bash
+cd datascience
+```
+Meaning: Moves into the project folder.
+
+### 2. Check current branch
+```bash
+git branch
+```
+Meaning: Displays the current branch.
+
+### 3. Create a feature branch
+```bash
+git branch feature1
+```
+Meaning: Creates a new branch named `feature1`.
+
+### 4. Switch to the feature branch
+```bash
+git checkout feature1
+```
+Meaning: Moves to the `feature1` branch.
+
+### 5. Create a Python file
+```bash
+echo 'print("Feature 1")' > feature.py
+```
+Meaning: Creates a Python file for the feature.
+
+### 6. Add the file
+```bash
+git add feature.py
+```
+Meaning: Adds the file to Git.
+
+### 7. Commit changes
+```bash
+git commit -m "Added feature1"
+```
+Meaning: Saves changes in the feature branch.
+
+### 8. Switch to main branch
+```bash
+git checkout main
+```
+Meaning: Returns to the main branch.
+
+### 9. Merge feature branch
+```bash
+git merge feature1
+```
+Meaning: Combines changes from `feature1` into `main`.
+
+### 10. View branches
+```bash
+git branch
+```
+Meaning: Displays all branches.
+
+### 11. View commit history
+```bash
+git log --oneline
+```
+Meaning: Displays the commit history.
+
+## Conflict Resolution
+
+A conflict happens when two branches modify the same part of a file.
+
+### 12. Open the conflicting file
+```bash
+nano app.py
+```
+Meaning: Opens the file for editing.
+
+Git may show:
+```text
+<<<<<<< HEAD
+print("Main branch")
+=======
+print("Feature branch")
+>>>>>>> feature1
+```
+
+### 13. Resolve the conflict
+Edit the file and keep the required code, for example:
+```python
+print("Final merged code")
+```
+
+Remove the conflict markers:
+```text
+<<<<<<<
+=======
+>>>>>>>
+```
+
+### 14. Add the resolved file
+```bash
+git add app.py
+```
+Meaning: Marks the conflict as resolved.
+
+### 15. Commit the merge
+```bash
+git commit -m "Resolved merge conflict"
+```
+Meaning: Saves the resolved version.
+
+## Expected Output
+
+After creating a branch:
+```text
+Switched to branch 'feature1'
+```
+
+After merging:
+```text
+Updating abc1234..def5678
+Fast-forward
+ feature.py | 1 +
+```
+
+After successful merge:
+```text
+Merge made by the 'ort' strategy.
+```
+
+After resolving conflict:
+```text
+[main abc1234] Resolved merge conflict
+```
+
+## Result
+Successfully created feature branches, merged changes into the main branch, and resolved merge conflicts using Git.
+
+## Viva Questions and Answers
+
+### Q1. What is a branch in Git?
+A branch is a separate workspace used to develop features independently.
+
+### Q2. Why do we use branches?
+Branches allow multiple developers to work independently without affecting the main code.
+
+### Q3. What is merging?
+Merging combines changes from one branch into another branch.
+
+### Q4. What is a merge conflict?
+A merge conflict occurs when Git cannot automatically combine changes made to the same part of a file.
+
+### Q5. How do we resolve a merge conflict?
+Edit the conflicting file, remove conflict markers, keep the required code, then add and commit the file.
+
+### Q6. What is the main branch?
+The main branch contains the primary version of the project.
+
+### Q7. Which command creates a branch?
+```bash
+git branch branchname
+```
+
+### Q8. Which command switches branches?
+```bash
+git checkout branchname
+```
+
+### Q9. Which command merges branches?
+```bash
+git merge branchname
+```
+
+## Easy Command Memory
+
+`branch → checkout → add → commit → checkout main → merge`
+
+- `branch` = Create branch
+- `checkout` = Switch branch
+- `add` = Add changes
+- `commit` = Save changes
+- `merge` = Combine branches
