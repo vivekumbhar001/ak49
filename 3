@@ -1,0 +1,235 @@
+# EXPERIMENT 3: Forking an Open-Source AI Project and Submitting a Pull Request
+
+## Aim
+To fork an open-source AI project, create a feature branch, submit a pull request, and address conflicts during the review process.
+
+## Software Required
+- Git
+- GitHub account
+- Ubuntu Terminal
+- Web browser
+
+## Theory
+
+**Open-source project:** A project whose source code is publicly available for use and contribution.
+
+**Fork:** Creating your own copy of another person's repository on GitHub.
+
+**Feature branch:** A separate branch used to develop a new feature.
+
+**Pull Request (PR):** A request to merge your changes into the original project.
+
+**Conflict:** Occurs when Git cannot automatically combine changes made to the same part of a file.
+
+## Commands with Labels and Meaning
+
+### 1. Fork an open-source project
+Open an AI project on GitHub, for example:
+https://github.com/scikit-learn/scikit-learn
+
+Click **Fork** and then **Create fork**.
+
+Meaning: Creates your own copy of the project in your GitHub account.
+
+### 2. Clone your fork
+```bash
+git clone https://github.com/USERNAME/scikit-learn.git
+```
+Meaning: Downloads your forked repository to your computer.
+
+Replace `USERNAME` with your GitHub username.
+
+### 3. Open the project folder
+```bash
+cd scikit-learn
+```
+Meaning: Moves into the project folder.
+
+### 4. Check the current branch
+```bash
+git branch
+```
+Meaning: Displays the current branch.
+
+### 5. Create a feature branch
+```bash
+git checkout -b feature-update
+```
+Meaning: Creates and switches to a new branch named `feature-update`.
+
+### 6. Make changes
+For a simple demonstration, create a file:
+```bash
+echo 'print("AI Project Updated")' > feature.py
+```
+Meaning: Creates a Python file containing a sample feature.
+
+### 7. Add the changes
+```bash
+git add feature.py
+```
+Meaning: Adds the new file to Git.
+
+### 8. Commit the changes
+```bash
+git commit -m "Added new feature"
+```
+Meaning: Saves the changes in the feature branch.
+
+### 9. Push the feature branch
+```bash
+git push origin feature-update
+```
+Meaning: Uploads the feature branch to your GitHub fork.
+
+### 10. Create a Pull Request
+On GitHub:
+1. Open your forked repository.
+2. Click **Compare & pull request**.
+3. Select the original project as the base repository.
+4. Select your fork as the head repository.
+5. Enter a title and description.
+6. Click **Create pull request**.
+
+Meaning: Requests the original project maintainers to review and merge your changes.
+
+## Addressing Conflicts
+
+### 11. Add the original repository as upstream
+```bash
+git remote add upstream https://github.com/scikit-learn/scikit-learn.git
+```
+Meaning: Connects your local repository to the original project.
+
+### 12. Fetch latest changes
+```bash
+git fetch upstream
+```
+Meaning: Downloads the latest changes from the original repository.
+
+### 13. Switch to the feature branch
+```bash
+git checkout feature-update
+```
+Meaning: Switches to the branch containing your changes.
+
+### 14. Merge original project changes
+```bash
+git merge upstream/main
+```
+Meaning: Combines changes from the original project's main branch into your feature branch.
+
+### 15. Resolve conflict
+If Git reports a conflict, open the conflicting file:
+```bash
+nano app.py
+```
+
+Edit the file and remove conflict markers:
+```text
+<<<<<<< HEAD
+=======
+>>>>>>> upstream/main
+```
+
+Keep the required code and save the file.
+
+### 16. Add the resolved file
+```bash
+git add app.py
+```
+Meaning: Marks the conflict as resolved.
+
+### 17. Commit the resolution
+```bash
+git commit -m "Resolved merge conflict"
+```
+Meaning: Saves the conflict resolution.
+
+### 18. Push updated feature branch
+```bash
+git push origin feature-update
+```
+Meaning: Uploads the updated branch to your fork.
+
+The existing pull request will update automatically.
+
+## Expected Output
+
+After cloning:
+```text
+Cloning into 'scikit-learn'...
+```
+
+After creating a branch:
+```text
+Switched to a new branch 'feature-update'
+```
+
+After committing:
+```text
+[feature-update abc1234] Added new feature
+1 file changed
+```
+
+After pushing:
+```text
+ * [new branch] feature-update -> feature-update
+```
+
+On GitHub, the pull request will show:
+```text
+Open
+```
+
+After review and successful merging:
+```text
+Merged
+```
+
+## Result
+Successfully forked an open-source AI project, created a feature branch, submitted a pull request, and handled conflicts during the review process.
+
+## Viva Questions and Answers
+
+### Q1. What is an open-source project?
+A project whose source code is publicly available for use and contribution.
+
+### Q2. What is forking?
+Forking creates a copy of another repository in your GitHub account.
+
+### Q3. What is a feature branch?
+A separate branch used to develop a feature without affecting the main branch.
+
+### Q4. What is a pull request?
+A pull request is a request to merge changes into another repository.
+
+### Q5. What is the purpose of a pull request?
+It allows code review, discussion, and approval before merging changes.
+
+### Q6. What is upstream?
+Upstream is the original repository from which a project was forked.
+
+### Q7. What is a merge conflict?
+A merge conflict occurs when Git cannot automatically combine changes.
+
+### Q8. How do you resolve a conflict?
+Edit the conflicting file, remove conflict markers, add the file, commit the resolution, and push the branch.
+
+### Q9. What is the difference between fork and clone?
+Fork creates a copy on GitHub, while clone downloads a repository to your computer.
+
+### Q10. Why do we use feature branches?
+To develop new features separately and avoid affecting the main code.
+
+## Easy Command Memory
+
+`fork → clone → branch → add → commit → push → PR`
+
+- Fork = Copy repository on GitHub
+- Clone = Download repository
+- Branch = Create separate workspace
+- Add = Select changes
+- Commit = Save changes
+- Push = Upload changes
+- PR = Request review and merge
